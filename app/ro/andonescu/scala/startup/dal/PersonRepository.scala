@@ -1,13 +1,13 @@
 package ro.andonescu.scala.startup.dal
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 
 import ro.andonescu.scala.startup.models.Person
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * A repository for people.

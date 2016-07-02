@@ -11,7 +11,7 @@ import play.api.mvc._
 
 import ro.andonescu.scala.startup.dal.PersonRepository
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class PersonController @Inject() (repo: PersonRepository, val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
 

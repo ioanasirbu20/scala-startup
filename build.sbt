@@ -12,6 +12,7 @@ lazy val root = (project in file("."))
     ScalariformKeys.preferences := ScalariformKeys.preferences.value
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(DoubleIndentClassDeclaration, true)
+      .setPreference(SpacesAroundMultiImports, false)
   ): _*)
 
 scalaVersion := "2.11.7"
