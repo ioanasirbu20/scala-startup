@@ -1,4 +1,4 @@
-package ro.andonescu.scala.startup.models
+package ro.andonescu.scala.startup.models.entity
 
 import play.api.libs.json._
 

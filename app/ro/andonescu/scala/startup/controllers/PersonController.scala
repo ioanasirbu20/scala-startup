@@ -9,7 +9,7 @@ import play.api.i18n._
 import play.api.libs.json.Json
 import play.api.mvc._
 
-import ro.andonescu.scala.startup.dal.PersonRepository
+import ro.andonescu.scala.startup.models.PersonRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,11 +1,10 @@
-package ro.andonescu.scala.startup.dal
+package ro.andonescu.scala.startup.models
 
 import javax.inject.{Inject, Singleton}
 
 import play.api.db.slick.DatabaseConfigProvider
+import ro.andonescu.scala.startup.models.entity.Person
 import slick.driver.JdbcProfile
-
-import ro.andonescu.scala.startup.models.Person
 
 import scala.concurrent.{ExecutionContext, Future}
 
