@@ -20,5 +20,7 @@ class ProductRepository @Inject() (implicit ec: ExecutionContext) {
   def findAll = products.toList.sortBy(_.ean)
 
   def findAllAsFuture = Future.successful(findAll)
+
+  def findByEan(ean: Long) = products.find(_.ean == ean)
 }
 

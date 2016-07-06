@@ -1,12 +1,23 @@
 @import ro.andonescu.scala.startup.models.entity.Product
 
-@(products: List[Product])(implicit lang: Lang)
+@(products: List[Product], product: Form[Product])(implicit messages: Messages)
+@import helper._
 
-@main("Welcome to Play!") {
+@main("Add a product!") {
 
     <dl class="products">
         @for(product <- products){
             <dt>@product.name</dt>
         }
     </dl>
+
+    @form(ro.andonescu.scala.startup.controllers.routes.ProductController.addProduct()){
+        @inputText(product("ean"))
+        @inputText(product("name"))
+
+        <div class="buttons">
+            <input type="submit" value="Add Product"/>
+        </div>
+    }
+
 }

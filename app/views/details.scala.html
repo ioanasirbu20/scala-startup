@@ -1,0 +1,17 @@
+@import ro.andonescu.scala.startup.models.entity.Product
+
+@(product: Option[Product])(implicit messages: Messages)
+
+@main("product.details"){
+    @if(product.isEmpty){
+        <h1>Nothing to diplay</h1>
+    } else {
+    <dl class="dl-horizontal">
+        <dt>@Messages("ean"):</dt>
+        <dd>@product.get.ean</dd>
+
+        <dt>@Messages("name"):</dt>
+        <dd>@product.get.name</dd>
+    </dl>
+    }
+}
