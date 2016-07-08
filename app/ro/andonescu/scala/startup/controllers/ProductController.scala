@@ -42,6 +42,16 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
   )
 
   def addProduct = Action.async { implicit request =>
-    ???
+    productForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(BadRequest(views.html.list(repo.products.toList, errorForm)))
+      },
+      product => {
+
+        repo.products = repo.products :+ product
+        Future.successful(Ok(views.html.list(repo.products.toList, productForm)))
+      }
+    )
   }
+
 }

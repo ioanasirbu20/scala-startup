@@ -5,6 +5,7 @@ import javax.inject.Inject
 import com.google.inject.Singleton
 import ro.andonescu.scala.startup.models.entity.Product
 
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -12,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 @Singleton
 class ProductRepository @Inject() (implicit ec: ExecutionContext) {
-  private var products = Set(
+  var products = mutable.MutableList(
     Product(5010255079763L, "Paperclips Large"),
     Product(5018206244666L, "Giant Paperclips")
   )
