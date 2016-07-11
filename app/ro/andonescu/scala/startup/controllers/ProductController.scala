@@ -16,15 +16,19 @@ import scala.concurrent.{ExecutionContext, Future}
  * Created by V3790155 on 7/5/2016.
  */
 class ProductController @Inject() (repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
-  def list = Action {
+  def getProducts = Action {
     val products = repo.findAll
-    Ok(views.html.list(products, productForm))
+    Ok(views.html.getProducts(products))
   }
 
   def list2 = Action.async {
     repo.findAllAsFuture.map { product =>
-      Ok(views.html.list(product, productForm))
+      Ok(views.html.getProducts(product))
     }
+  }
+
+  def addAProduct = Action {
+    Ok(views.html.addAProduct(productForm))
   }
 
   def show(ean: Long) = Action {
@@ -44,12 +48,11 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
   def addProduct = Action.async { implicit request =>
     productForm.bindFromRequest.fold(
       errorForm => {
-        Future.successful(BadRequest(views.html.list(repo.products.toList, errorForm)))
+        Future.successful(BadRequest(views.html.addAProduct(errorForm)))
       },
       product => {
-
         repo.products = repo.products :+ product
-        Future.successful(Ok(views.html.list(repo.products.toList, productForm)))
+        Future.successful(Redirect(routes.ProductController.getProducts()))
       }
     )
   }
