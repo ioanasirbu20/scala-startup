@@ -21,6 +21,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % "3.1.1",
   "com.typesafe.play" %% "play-slick-evolutions" % "2.0.2",
   "com.h2database" % "h2" % "1.4.192",
+  "com.typesafe.slick" %% "slick" % "3.1.1",
+  "com.typesafe.slick" %% "slick-codegen" % "3.1.1",
+  "com.github.tminglei" %% "slick-pg" % "0.14.1",
+  "com.github.tminglei" %% "slick-pg_date2" % "0.14.1",
   specs2 % Test
 )
 
