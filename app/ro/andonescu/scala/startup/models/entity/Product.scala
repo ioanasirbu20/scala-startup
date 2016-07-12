@@ -5,5 +5,5 @@ import play.mvc.BodyParser.Json
 /**
  * Created by V3790155 on 7/5/2016.
  */
-case class Product(ean: Long, name: String)
+case class Product(id: Long, ean: Long, name: String)
 

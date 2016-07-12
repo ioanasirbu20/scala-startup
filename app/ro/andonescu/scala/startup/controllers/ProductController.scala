@@ -16,33 +16,33 @@ import scala.concurrent.{ExecutionContext, Future}
  * Created by V3790155 on 7/5/2016.
  */
 class ProductController @Inject() (repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
-  def getProducts = Action {
-    val products = repo.findAll
-    Ok(views.html.getProducts(products))
-  }
-
-  def list2 = Action.async {
-    repo.findAllAsFuture.map { product =>
-      Ok(views.html.getProducts(product))
+  def getProducts = Action.async {
+    repo.findAll().map { products =>
+      Ok(views.html.getProducts(products))
     }
   }
+
+  //  def list2 = Action.async {
+  //    repo.findAllAsFuture.map { product =>
+  //      Ok(views.html.getProducts(product))
+  //    }
+  //  }
 
   def addAProduct = Action {
     Ok(views.html.addAProduct(productForm))
   }
 
-  def show(ean: Long) = Action {
-    val product = repo.findByEan(ean)
-    Ok(views.html.details(product))
+  def show(ean: Long) = Action.async {
+    repo.findByEan(ean).map { product =>
+      Ok(views.html.details(product))
+    }
   }
 
-  private val productForm: Form[Product] = Form(
+  private val productForm: Form[CreateProductForm] = Form(
     mapping(
-      "ean" -> longNumber.verifying(
-        "validation.ean.duplicate", repo.findByEan(_).isEmpty
-      ),
+      "ean" -> longNumber, //longNumber.verifying("validation.ean.duplicate", repo.findByEan(_).isEmpty)
       "name" -> nonEmptyText
-    )(Product.apply)(Product.unapply)
+    )(CreateProductForm.apply)(CreateProductForm.unapply)
   )
 
   def addProduct = Action.async { implicit request =>
@@ -51,10 +51,15 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
         Future.successful(BadRequest(views.html.addAProduct(errorForm)))
       },
       product => {
-        repo.products = repo.products :+ product
-        Future.successful(Redirect(routes.ProductController.getProducts()))
+
+        
+
+        repo.create(product.ean, product.name).map { _ =>
+          (Redirect(routes.ProductController.getProducts()))
+        }
       }
     )
   }
-
 }
+
+case class CreateProductForm(ean: Long, name: String)

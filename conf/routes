@@ -11,7 +11,6 @@ GET     /getPersons                 ro.andonescu.scala.startup.controllers.Perso
 
 GET     /getProducts                ro.andonescu.scala.startup.controllers.ProductController.getProducts
 GET     /addAProduct               ro.andonescu.scala.startup.controllers.ProductController.addAProduct
-GET     /productsAsFuture           ro.andonescu.scala.startup.controllers.ProductController.list2
 GET     /products/:ean              ro.andonescu.scala.startup.controllers.ProductController.show(ean: Long)
 POST    /product                    ro.andonescu.scala.startup.controllers.ProductController.addProduct
 
