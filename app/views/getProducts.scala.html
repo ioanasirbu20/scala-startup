@@ -3,11 +3,11 @@
 @(products: Seq[Product])(implicit messages: Messages)
 @import helper._
 
-@main("Add a product!") {
+@main("Products") {
 
     <ul class="products">
         @for(product <- products){
-            <li>@product.name</li>
+            <li>@product.ean</li>
         }
     </ul>
 

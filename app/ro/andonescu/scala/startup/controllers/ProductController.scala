@@ -6,6 +6,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import ro.andonescu.scala.startup.models.ProductRepository
 import ro.andonescu.scala.startup.models.entity.Product
@@ -18,10 +19,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class ProductController @Inject() (repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
   def getProducts = Action.async {
     repo.findAll().map { products =>
-      Ok(views.html.getProducts(products))
+      Ok(Json.toJson(products))
     }
   }
 
+  def index = Action {
+    Ok(views.html.index())
+  }
   //  def list2 = Action.async {
   //    repo.findAllAsFuture.map { product =>
   //      Ok(views.html.getProducts(product))
@@ -51,8 +55,6 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
         Future.successful(BadRequest(views.html.addAProduct(errorForm)))
       },
       product => {
-
-        
 
         repo.create(product.ean, product.name).map { _ =>
           (Redirect(routes.ProductController.getProducts()))

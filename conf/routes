@@ -3,18 +3,30 @@
 # ~~~~
 
 # Home page
-GET     /                           ro.andonescu.scala.startup.controllers.ApplicationController.homepage
+#GET     /                           ro.andonescu.scala.startup.controllers.ApplicationController.homepage
 GET     /addAPerson                 ro.andonescu.scala.startup.controllers.PersonController.addAPerson
 POST    /person                     ro.andonescu.scala.startup.controllers.PersonController.addPerson
 GET     /getPersons                 ro.andonescu.scala.startup.controllers.PersonController.getPersons
 
 
-GET     /getProducts                ro.andonescu.scala.startup.controllers.ProductController.getProducts
-GET     /addAProduct               ro.andonescu.scala.startup.controllers.ProductController.addAProduct
+#GET     /getProducts                ro.andonescu.scala.startup.controllers.ProductController.getProducts
+GET     /addAProduct                ro.andonescu.scala.startup.controllers.ProductController.addAProduct
 GET     /products/:ean              ro.andonescu.scala.startup.controllers.ProductController.show(ean: Long)
 POST    /product                    ro.andonescu.scala.startup.controllers.ProductController.addProduct
 
 GET     /persons                    ro.andonescu.scala.startup.controllers.ApplicationController.persons
 GET     /products                   ro.andonescu.scala.startup.controllers.ApplicationController.products
+
+
+#html
+GET     /                          ro.andonescu.scala.startup.controllers.ProductController.index
+
+
+
+# json
+GET     /api/products               ro.andonescu.scala.startup.controllers.ProductController.getProducts
+
+
+
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

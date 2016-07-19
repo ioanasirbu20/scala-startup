@@ -51,5 +51,6 @@ class ProductRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
   def findByEan(ean: Long): Future[Option[Product]] = db.run {
     product.filter(f => f.ean === ean).result.headOption
   }
+
 }
 
