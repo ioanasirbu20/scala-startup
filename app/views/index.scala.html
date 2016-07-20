@@ -10,9 +10,10 @@
             <div class="navbarnavbar-fixed-top">
                 <div class="navbar-inner">
                     <div class="container">
-                        <table data-list="@ro.andonescu.scala.startup.controllers.routes.ProductController.getProducts()">
-                       </table>
-                        <a class="brand" href="ro.andonescu.scala.startup.controllers.routes.ProductController.index()">Productcatalog</a>
+                        <a class="brand" href="ro.andonescu.scala.startup.controllers.routes.ProductController.index()">Product catalog</a>
+                        <table data-list="@ro.andonescu.scala.startup.controllers.routes.ProductController.getProducts()"
+                            data-details ="@ro.andonescu.scala.startup.controllers.routes.ProductController.show(0)" >
+                        </table>
                     </div>
                 </div>
             </div>

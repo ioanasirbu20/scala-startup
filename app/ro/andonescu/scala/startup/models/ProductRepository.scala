@@ -52,5 +52,9 @@ class ProductRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     product.filter(f => f.ean === ean).result.headOption
   }
 
+  def saveByEan(ean: Long, name: String) = db.run {
+    product.filter(_.ean === ean).map(_.name).update(name)
+  }
+
 }
 

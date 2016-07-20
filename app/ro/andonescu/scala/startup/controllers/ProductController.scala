@@ -14,9 +14,9 @@ import ro.andonescu.scala.startup.models.entity.Product
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * Created by V3790155 on 7/5/2016.
- */
-class ProductController @Inject() (repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
+  * Created by V3790155 on 7/5/2016.
+  */
+class ProductController @Inject()(repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
   def getProducts = Action.async {
     repo.findAll().map { products =>
       Ok(Json.toJson(products))
@@ -26,6 +26,7 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
   def index = Action {
     Ok(views.html.index())
   }
+
   //  def list2 = Action.async {
   //    repo.findAllAsFuture.map { product =>
   //      Ok(views.html.getProducts(product))
@@ -38,8 +39,20 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
 
   def show(ean: Long) = Action.async {
     repo.findByEan(ean).map { product =>
-      Ok(views.html.details(product))
+      Ok(Json.toJson(product))
     }
+  }
+
+  def save(ean: Long) = Action.async(parse.json) { request =>
+
+    val productJson = request.body
+    val product = productJson.as[PutProductForm](PutProductForm.putProductFormat)
+
+    repo.saveByEan(product.ean, product.name).map {
+      case 0 => BadRequest("Product not found")
+      case _ => Ok("saved")
+    }
+
   }
 
   private val productForm: Form[CreateProductForm] = Form(
@@ -65,3 +78,10 @@ class ProductController @Inject() (repo: ProductRepository, implicit val message
 }
 
 case class CreateProductForm(ean: Long, name: String)
+
+case class PutProductForm(ean: Long, name: String)
+
+object PutProductForm {
+
+  implicit def putProductFormat = Json.format[PutProductForm]
+}

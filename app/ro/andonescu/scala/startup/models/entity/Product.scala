@@ -11,3 +11,4 @@ object Product {
 
   implicit val productFormat = Json.format[Product]
 }
+
