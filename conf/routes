@@ -28,6 +28,7 @@ GET         /api/products             ro.andonescu.scala.startup.controllers.Pro
 GET         /api/products/:ean        ro.andonescu.scala.startup.controllers.ProductController.show(ean:Long)
 PUT         /api/products/:ean        ro.andonescu.scala.startup.controllers.ProductController.save(ean: Long)
 
+GET         /V1/languages             ro.andonescu.scala.startup.controllers.LanguageController.getLanguages
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file             controllers.Assets.at(path="/public", file)

@@ -14,9 +14,9 @@ import ro.andonescu.scala.startup.models.entity.Product
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Created by V3790155 on 7/5/2016.
-  */
-class ProductController @Inject()(repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
+ * Created by V3790155 on 7/5/2016.
+ */
+class ProductController @Inject() (repo: ProductRepository, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
   def getProducts = Action.async {
     repo.findAll().map { products =>
       Ok(Json.toJson(products))

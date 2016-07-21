@@ -25,6 +25,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-codegen" % "3.1.1",
   "com.github.tminglei" %% "slick-pg" % "0.14.1",
   "com.github.tminglei" %% "slick-pg_date2" % "0.14.1",
+  "com.github.tototoshi" %% "slick-joda-mapper" % "2.2.0",
   specs2 % Test
 )
 
