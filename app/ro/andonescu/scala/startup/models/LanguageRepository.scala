@@ -20,11 +20,11 @@ class LanguageRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(im
   import com.github.tototoshi.slick.PostgresJodaSupport._
 
   private class LanguageTable(tag: Tag) extends Table[Language](tag, "language") {
-    def id = column[Long]("language_id", O.PrimaryKey, O.AutoInc)
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def name = column[String]("name")
 
-    def lastUpdate = column[DateTime]("last_update")
+    def lastUpdate = column[DateTime]("lastUpdate")
 
     def * = (id, name, lastUpdate) <> ((Language.apply _).tupled, Language.unapply)
   }

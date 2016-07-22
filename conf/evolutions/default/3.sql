@@ -8,10 +8,10 @@ CREATE SEQUENCE language_id_seq
   CACHE 1;
 
 create table "language" (
-  "language_id" integer NOT NULL DEFAULT nextval('language_id_seq'::regclass),
+  "id" integer NOT NULL DEFAULT nextval('language_id_seq'::regclass),
   "name" varchar not null,
-  "last_update" timestamp,
-   CONSTRAINT language_pkey PRIMARY KEY (language_id)
+  "lastUpdate" timestamp,
+   CONSTRAINT language_pkey PRIMARY KEY (id)
 );
 
 # --- !Downs

@@ -1,12 +1,11 @@
 package ro.andonescu.scala.startup.controllers
 
-import play.api.mvc.{Action, Controller}
-import ro.andonescu.scala.startup.models.LanguageRepository
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
-import ro.andonescu.scala.startup.controllers.views.LanguagesView
-import ro.andonescu.scala.startup.models.entity.Language
+import play.api.mvc.{Action, Controller}
+import ro.andonescu.scala.startup.controllers.jsons.LanguagesView
+import ro.andonescu.scala.startup.models.LanguageRepository
 
 import scala.concurrent.ExecutionContext
 
