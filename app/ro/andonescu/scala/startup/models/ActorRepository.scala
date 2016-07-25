@@ -3,6 +3,7 @@ package ro.andonescu.scala.startup.models
 import com.google.inject.{Inject, Singleton}
 import org.joda.time.DateTime
 import play.api.db.slick.DatabaseConfigProvider
+import ro.andonescu.scala.startup.controllers.jsons.ActorForm
 import ro.andonescu.scala.startup.models.entity.Actor
 import slick.driver.JdbcProfile
 
@@ -37,4 +38,11 @@ class ActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
     actor.result
   }
 
+  def save(a: ActorForm): Future[Long] = db.run {
+    actor returning actor.map(_.id) += Actor(0, a.firstName, a.lastName, DateTime.now())
+  }
+
+  def delete(id: Long) = db.run {
+    actor.filter(_.id === id).delete
+  }
 }
