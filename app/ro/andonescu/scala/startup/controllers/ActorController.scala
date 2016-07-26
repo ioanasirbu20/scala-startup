@@ -29,7 +29,8 @@ class ActorController @Inject() (service: ActorsService, implicit val messagesAp
       form => {
         //
         service.save(form).map {
-          id => Ok(s"Saved $id")
+          case Right(id)      => Ok(s"Saved $id")
+          case Left(errorMsg) => BadRequest(errorMsg)
         }
       }
     )

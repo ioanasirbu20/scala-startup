@@ -8,7 +8,3 @@ import play.api.libs.json.Json
 case class Film(id: Long, title: String, description: String, releaseYear: Int,
   languageId: Int, originalLanguageId: Int, rentalDuration: Int,
   rentalRate: Float, length: Int, replacementCost: Float, rating: String)
-
-object Film {
-  implicit val filmViewFormat = Json.format[Film]
-}

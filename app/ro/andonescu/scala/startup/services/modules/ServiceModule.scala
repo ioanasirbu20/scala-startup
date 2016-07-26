@@ -2,7 +2,7 @@ package ro.andonescu.scala.startup.services.modules
 
 import play.api.inject.Module
 import play.api.{Configuration, Environment}
-import ro.andonescu.scala.startup.services.{ActorsService, ActorsServiceImpl}
+import ro.andonescu.scala.startup.services.{ActorsService, ActorsServiceImpl, FilmsService, FilmsServiceImpl}
 
 /**
  * Created by V3790155 on 7/26/2016.
@@ -10,6 +10,7 @@ import ro.andonescu.scala.startup.services.{ActorsService, ActorsServiceImpl}
 class ServiceModule extends Module {
 
   def bindings(environment: Environment, configuration: Configuration) = Seq(
-    bind[ActorsService].to[ActorsServiceImpl]
+    bind[ActorsService].to[ActorsServiceImpl],
+    bind[FilmsService].to[FilmsServiceImpl]
   )
 }

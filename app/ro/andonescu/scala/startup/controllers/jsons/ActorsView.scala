@@ -1,6 +1,5 @@
 package ro.andonescu.scala.startup.controllers.jsons
 
-import org.joda.time.DateTime
 import play.api.libs.json._
 import ro.andonescu.scala.startup.models.entity.Actor
 import play.api.libs.functional.syntax._
@@ -23,7 +22,7 @@ object ActorsView {
     )
   }
 
-  implicit val actorViewFormat = Json.writes[ActorsView]
+  implicit val actorViewWrites = Json.writes[ActorsView]
 }
 
 object ActorForm {

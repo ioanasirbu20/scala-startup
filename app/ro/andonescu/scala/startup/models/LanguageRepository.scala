@@ -35,4 +35,7 @@ class LanguageRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(im
     language.result
   }
 
+  def idCheck(id: Long): Future[Option[Language]] = db.run {
+    language.filter(_.id === id).result.headOption
+  }
 }

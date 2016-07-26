@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 trait ActorsService {
 
-  def save(actorForm: ActorForm): Future[Long]
+  def save(actorForm: ActorForm): Future[Either[String, Long]]
 
   def findAll(): Future[Seq[Actor]]
 
@@ -27,14 +27,24 @@ class ActorsServiceImpl @Inject() (repo: ActorRepository)(implicit ec: Execution
     repo.findAll()
   }
 
-  override def save(actorForm: ActorForm): Future[Long] = {
-    repo.save(Actor(0, actorForm.firstName, actorForm.lastName, DateTime.now()))
+  override def save(actorForm: ActorForm): Future[Either[String, Long]] = {
+
+    def isActorValid(): Future[Boolean] = {
+      repo.by(actorForm.firstName, actorForm.lastName).map {
+        case Some(_) => false
+        case None    => true
+      }
+    }
+
+    isActorValid().flatMap { isValid =>
+      if (isValid)
+        repo.save(Actor(0, actorForm.firstName, actorForm.lastName, DateTime.now())).map(v => Right(v))
+      else
+        Future.successful(Left("Actor already saved!"))
+    }
   }
 
   override def delete(id: Long): Future[Int] = {
     repo.delete(id)
   }
-
-  private def hello = "Hello"
-
 }
