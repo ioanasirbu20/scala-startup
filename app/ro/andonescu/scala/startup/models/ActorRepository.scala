@@ -38,11 +38,11 @@ class ActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
     actor.result
   }
 
-  def save(a: ActorForm): Future[Long] = db.run {
-    actor returning actor.map(_.id) += Actor(0, a.firstName, a.lastName, DateTime.now())
+  def save(a: Actor): Future[Long] = db.run {
+    actor returning actor.map(_.id) += a
   }
 
-  def delete(id: Long) = db.run {
+  def delete(id: Long): Future[Int] = db.run {
     actor.filter(_.id === id).delete
   }
 }
