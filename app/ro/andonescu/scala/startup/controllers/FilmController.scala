@@ -7,6 +7,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import ro.andonescu.scala.startup.controllers.jsons.{FilmForm, FilmsView}
 import ro.andonescu.scala.startup.models.FilmRepository
+import ro.andonescu.scala.startup.models.entity.Film
 import ro.andonescu.scala.startup.services.FilmsService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,6 +31,27 @@ class FilmController @Inject() (service: FilmsService, implicit val messagesApi:
       form => {
         service.save(form).map {
           case Right(id)      => Ok("saved")
+          case Left(errorMsg) => BadRequest(errorMsg)
+        }
+      }
+    )
+  }
+
+  def removeFilm(id: Int) = Action.async {
+    service.delete(id).map {
+      case 0 => BadRequest("failed")
+      case _ => Ok("deleted")
+    }
+  }
+
+  def updateFilm(id: Long) = Action.async(parse.json) { request =>
+    request.body.validate[FilmForm].fold(
+      errors => {
+        Future.successful(BadRequest("Expecting json data"))
+      },
+      form => {
+        service.update(id, form).map {
+          case Right(id)      => Ok("updated")
           case Left(errorMsg) => BadRequest(errorMsg)
         }
       }
