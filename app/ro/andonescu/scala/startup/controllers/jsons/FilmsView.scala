@@ -24,7 +24,7 @@ object FilmsView {
       "description" -> Json.toJson(f.description),
       "releaseYear" -> Json.toJson(f.releaseYear),
       "languageId" -> Json.toJson(f.languageId),
-      "originalLangugeId" -> Json.toJson(f.originalLanguageId),
+      "originalLanguageId" -> Json.toJson(f.originalLanguageId),
       "rentalDuration" -> Json.toJson(f.rentalDuration),
       "rentalRate" -> Json.toJson(f.rentalRate),
       "length" -> Json.toJson(f.length),

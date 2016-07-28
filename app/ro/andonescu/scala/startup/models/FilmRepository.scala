@@ -66,9 +66,11 @@ class FilmRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     film.filter(_.id === f.id).update(f)
   }
 
-//  def existsByTitleAndNotId(title: String, notId: Long): Future[Boolean] = db.run {
-//    //    film.filter(_.title === title).filterNot(_.id === notId).exists.result
-//
-//    film.filter(f => f.id =!= notId && f.title === title).exists.result
-//  }
+  def existsByTitleAndNotId(title: String, notId: Long): Future[Boolean] = db.run {
+    film.filter(f => f.id =!= notId && f.title === title).exists.result
+  }
+
+  def existsById(id: Long): Future[Boolean] = db.run {
+    film.filter(_.id === id).exists.result
+  }
 }

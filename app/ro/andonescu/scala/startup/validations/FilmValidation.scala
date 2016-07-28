@@ -6,6 +6,7 @@ import com.google.inject.{Inject, Singleton}
 import ro.andonescu.scala.startup.controllers.jsons.FilmForm
 import ro.andonescu.scala.startup.models.entity.Film
 import ro.andonescu.scala.startup.models.{FilmRepository, LanguageRepository}
+import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,43 +16,65 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class FilmValidation @Inject() (repo: FilmRepository, langRepo: LanguageRepository)(implicit ec: ExecutionContext) {
 
-  def isTitleValid(f: FilmForm): Future[Boolean] = {
+  def isTitleValid(f: FilmForm): Future[Seq[ErrorMessage]] = {
     repo.byTitle(f.title).map {
-      case Some(_) => false
-      case None    => true
+      case Some(_) => Seq(ErrorMessage("title", "Film with that title already saved."))
+      case None    => Seq.empty
     }
   }
 
-  def isLanguageIdValid(f: FilmForm): Future[Boolean] = {
+  def isLanguageIdValid(f: FilmForm): Future[Seq[ErrorMessage]] = {
     langRepo.idCheck(f.languageId).map {
-      case Some(_) => true
-      case None    => false
+      case Some(_) => Seq.empty
+      case None    => Seq(ErrorMessage("languageId", "The languageId does not exist"))
     }
   }
 
-  def isRatingValid(f: FilmForm): Boolean = {
+  def isRatingValid(f: FilmForm): Seq[ErrorMessage] = {
     val ratingList = List("NC-17", "PG-13", "R", "G", "PG")
-    def ratingCheck(ratingList: List[String]): Boolean = ratingList match {
-      case Nil                                => false
-      case head :: tail if (head == f.rating) => true
+    def ratingCheck(ratingList: List[String]): Seq[ErrorMessage] = ratingList match {
+      case Nil                                => Seq(ErrorMessage("rating", "Rating invalid"))
+      case head :: tail if (head == f.rating) => Seq.empty
       case _                                  => ratingCheck(ratingList.tail)
     }
 
     ratingCheck(ratingList)
   }
 
-  def isReleaseYearValid(f: FilmForm): Boolean = f.releaseYear <= Calendar.getInstance().get(Calendar.YEAR) && f.releaseYear > 1920
+  def isReleaseYearValid(f: FilmForm): Seq[ErrorMessage] = f.releaseYear match {
+    case a if a <= Calendar.getInstance().get(Calendar.YEAR) && a > 1920 => Seq.empty
+    case _ => Seq(ErrorMessage("releaseYear", "ReleaseYear not valid"))
+  }
+
+  def titleValidUpdate(f: FilmForm, id: Long): Future[Seq[ErrorMessage]] = {
+    repo.existsByTitleAndNotId(f.title, id).map {
+      case true  => Seq(ErrorMessage("title", "title already exists"))
+      case false => Seq.empty
+    }
+  }
+
+  def idValid(id: Long): Future[Seq[ErrorMessage]] = {
+    repo.existsById(id).map {
+      case true  => Seq.empty
+      case false => Seq(ErrorMessage("id", "id does not exist"))
+    }
+  }
 
   def saveValidation(f: FilmForm) = {
     for {
       titleValid <- isTitleValid(f)
       languageIdValid <- isLanguageIdValid(f)
-    } yield titleValid && languageIdValid && isReleaseYearValid(f) && isRatingValid(f)
+    } yield titleValid ++ languageIdValid ++ isReleaseYearValid(f) ++ isRatingValid(f)
   }
 
-  def updateValidation(f: FilmForm) = {
+  def updateValidation(f: FilmForm, id: Long) = {
     for {
       languageIdValid <- isLanguageIdValid(f)
-    } yield languageIdValid && isReleaseYearValid(f) && isRatingValid(f)
+      titleValid <- titleValidUpdate(f, id)
+    } yield languageIdValid ++ isReleaseYearValid(f) ++ isRatingValid(f) ++ titleValid
+  }
+
+  def deleteValid(f: Film) = {
+    idValid(f.id)
   }
 }

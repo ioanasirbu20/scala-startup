@@ -7,6 +7,7 @@ import ro.andonescu.scala.startup.controllers.jsons.FilmForm
 import ro.andonescu.scala.startup.models.{FilmRepository, LanguageRepository}
 import ro.andonescu.scala.startup.models.entity.Film
 import ro.andonescu.scala.startup.validations.FilmValidation
+import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,11 +17,11 @@ import scala.concurrent.{ExecutionContext, Future}
 trait FilmsService {
   def findAll(): Future[Seq[Film]]
 
-  def save(f: FilmForm): Future[Either[String, Long]]
+  def save(f: FilmForm): Future[Either[Seq[ErrorMessage], Long]]
 
-  def delete(id: Int): Future[Int]
+  def delete(id: Int): Future[Either[Seq[ErrorMessage], Int]]
 
-  def update(id: Long, f: FilmForm): Future[Either[String, Long]]
+  def update(id: Long, f: FilmForm): Future[Either[Seq[ErrorMessage], Long]]
 }
 
 @Singleton
@@ -29,26 +30,29 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, validation: FilmValidati
     repo.findAll()
   }
 
-  override def save(f: FilmForm): Future[Either[String, Long]] = {
+  override def save(f: FilmForm): Future[Either[Seq[ErrorMessage], Long]] = {
 
-    validation.saveValidation(f).flatMap { isValid =>
-      if (isValid)
+    validation.saveValidation(f).flatMap {
+      case Nil =>
         repo.save(Film(0, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating)).map((v => Right(v)))
-      else
-        Future.successful(Left("Failed"))
+      case errors =>
+        Future.successful(Left(errors))
     }
   }
 
-  override def delete(id: Int): Future[Int] = {
-    repo.delete(id)
+  override def delete(id: Int): Future[Either[Seq[ErrorMessage], Int]] = {
+    validation.idValid(id).flatMap {
+      case Nil   => repo.delete(id).map(v => Right(v))
+      case error => Future.successful(Left(error))
+    }
   }
 
-  override def update(id: Long, f: FilmForm): Future[Either[String, Long]] = {
-    validation.updateValidation(f).flatMap { isValid =>
-      if (isValid)
+  override def update(id: Long, f: FilmForm): Future[Either[Seq[ErrorMessage], Long]] = {
+    validation.updateValidation(f, id).flatMap {
+      case Nil =>
         repo.update(Film(id, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating)).map((v => Right(v)))
-      else
-        Future.successful(Left("failed"))
+      case errors =>
+        Future.successful(Left(errors))
     }
   }
 }

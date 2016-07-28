@@ -5,6 +5,7 @@ import org.joda.time.DateTime
 import ro.andonescu.scala.startup.controllers.jsons.ActorForm
 import ro.andonescu.scala.startup.models.ActorRepository
 import ro.andonescu.scala.startup.models.entity.Actor
+import ro.andonescu.scala.startup.validations.errors.{ErrorMessage, ErrorMessages}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 trait ActorsService {
 
-  def save(actorForm: ActorForm): Future[Either[String, Long]]
+  def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]]
 
   def findAll(): Future[Seq[Actor]]
 
@@ -27,21 +28,32 @@ class ActorsServiceImpl @Inject() (repo: ActorRepository)(implicit ec: Execution
     repo.findAll()
   }
 
-  override def save(actorForm: ActorForm): Future[Either[String, Long]] = {
+  override def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]] = {
+    validateActorCreate(actorForm).flatMap {
+      case Nil =>
+        repo.save(Actor(0, actorForm.firstName, actorForm.lastName, DateTime.now())).map(v => Right(v))
+      case errors => Future.successful(Left(errors))
+    }
+  }
 
-    def isActorValid(): Future[Boolean] = {
+  def validateActorCreate(actorForm: ActorForm): Future[Seq[ErrorMessage]] = {
+    def isActorValid(): Future[Seq[ErrorMessage]] = {
       repo.by(actorForm.firstName, actorForm.lastName).map {
-        case Some(_) => false
-        case None    => true
+        case Some(_) => Seq(ErrorMessage("firstName, lastName", "Actor already saved."))
+        case None    => Seq.empty
       }
     }
-
-    isActorValid().flatMap { isValid =>
-      if (isValid)
-        repo.save(Actor(0, actorForm.firstName, actorForm.lastName, DateTime.now())).map(v => Right(v))
-      else
-        Future.successful(Left("Actor already saved!"))
-    }
+    //
+    //    val b : Seq[ErrorMessage] = ???
+    //    val c: Future[Seq[ErrorMessage]] = ???
+    //
+    //
+    //     for {
+    //      actorValidSeq <- isActorValid()
+    //      cSeq <- c
+    //    } yield actorValidSeq ++ cSeq ++ b
+    //
+    isActorValid()
   }
 
   override def delete(id: Long): Future[Int] = {
