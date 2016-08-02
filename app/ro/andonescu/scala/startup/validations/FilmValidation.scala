@@ -5,7 +5,7 @@ import java.util.Calendar
 import com.google.inject.{Inject, Singleton}
 import ro.andonescu.scala.startup.controllers.jsons.FilmForm
 import ro.andonescu.scala.startup.models.entity.Film
-import ro.andonescu.scala.startup.models.{FilmRepository, LanguageRepository}
+import ro.andonescu.scala.startup.models.{ActorRepository, FilmRepository, LanguageRepository}
 import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
  * Created by V3790155 on 7/27/2016.
  */
 @Singleton
-class FilmValidation @Inject() (repo: FilmRepository, langRepo: LanguageRepository)(implicit ec: ExecutionContext) {
+class FilmValidation @Inject() (repo: FilmRepository, langRepo: LanguageRepository, actorRepo: ActorRepository)(implicit ec: ExecutionContext) {
 
   def isTitleValid(f: FilmForm): Future[Seq[ErrorMessage]] = {
     repo.byTitle(f.title).map {
@@ -60,11 +60,19 @@ class FilmValidation @Inject() (repo: FilmRepository, langRepo: LanguageReposito
     }
   }
 
+  def existsActor(f: FilmForm): Future[Seq[ErrorMessage]] = {
+    actorRepo.existsId(f.actors).map(ids => {
+      if (ids.length == f.actors.length) Seq.empty
+      else Seq(ErrorMessage("actors", "actor id does not exist"))
+    })
+  }
+
   def saveValidation(f: FilmForm) = {
     for {
       titleValid <- isTitleValid(f)
       languageIdValid <- isLanguageIdValid(f)
-    } yield titleValid ++ languageIdValid ++ isReleaseYearValid(f) ++ isRatingValid(f)
+      existsActor <- existsActor(f)
+    } yield titleValid ++ languageIdValid ++ isReleaseYearValid(f) ++ isRatingValid(f) ++ existsActor
   }
 
   def updateValidation(f: FilmForm, id: Long) = {

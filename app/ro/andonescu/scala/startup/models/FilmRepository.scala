@@ -73,4 +73,8 @@ class FilmRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
   def existsById(id: Long): Future[Boolean] = db.run {
     film.filter(_.id === id).exists.result
   }
+
+  //  def getIds(): Future[Seq[Long]] = db.run {
+  //    film.map(_.id).result
+  //  }
 }

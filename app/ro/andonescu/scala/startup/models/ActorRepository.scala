@@ -48,4 +48,9 @@ class ActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
   def by(firstName: String, lastName: String): Future[Option[Actor]] = db.run {
     actor.filter(a => a.lastName === lastName && a.firstName === firstName).result.headOption
   }
+
+  def existsId(ids: Seq[Long]): Future[Seq[Long]] = db.run {
+    actor.filter(_.id inSet ids).map(_.id).result
+  }
+
 }

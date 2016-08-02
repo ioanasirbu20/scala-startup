@@ -10,7 +10,7 @@ import ro.andonescu.scala.startup.models.entity.Film
  */
 
 case class FilmForm(title: String, description: String, releaseYear: Int,
-  languageId: Int, originalLanguageId: Int, rentalDuration: Int,
+  languageId: Int, originalLanguageId: Int, actors: Seq[Long], rentalDuration: Int,
   rentalRate: Float, length: Int, replacementCost: Float, rating: String)
 
 case class FilmsView(items: Seq[Film])
@@ -44,6 +44,7 @@ object FilmForm {
     (JsPath \ "releaseYear").read[Int] and
     (JsPath \ "languageId").read[Int] and
     (JsPath \ "originalLanguageId").read[Int] and
+    (JsPath \ "actors").read[Seq[Long]] and
     (JsPath \ "rentalDuration").read[Int] and
     (JsPath \ "rentalRate").read[Float] and
     (JsPath \ "length").read[Int] and

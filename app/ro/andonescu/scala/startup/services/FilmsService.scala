@@ -3,9 +3,10 @@ package ro.andonescu.scala.startup.services
 import java.util.Calendar
 
 import com.google.inject.{Inject, Singleton}
+import org.joda.time.DateTime
 import ro.andonescu.scala.startup.controllers.jsons.FilmForm
-import ro.andonescu.scala.startup.models.{FilmRepository, LanguageRepository}
-import ro.andonescu.scala.startup.models.entity.Film
+import ro.andonescu.scala.startup.models.{FilmActorRepository, FilmRepository, LanguageRepository}
+import ro.andonescu.scala.startup.models.entity.{Film, FilmActor}
 import ro.andonescu.scala.startup.validations.FilmValidation
 import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 
@@ -25,7 +26,7 @@ trait FilmsService {
 }
 
 @Singleton
-class FilmsServiceImpl @Inject() (repo: FilmRepository, validation: FilmValidation)(implicit ec: ExecutionContext) extends FilmsService {
+class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActorRepository, validation: FilmValidation)(implicit ec: ExecutionContext) extends FilmsService {
   override def findAll(): Future[Seq[Film]] = {
     repo.findAll()
   }
@@ -33,8 +34,15 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, validation: FilmValidati
   override def save(f: FilmForm): Future[Either[Seq[ErrorMessage], Long]] = {
 
     validation.saveValidation(f).flatMap {
-      case Nil =>
-        repo.save(Film(0, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating)).map((v => Right(v)))
+      case Nil => {
+
+        val filmIdF = repo.save(Film(0, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating))
+
+        for {
+          filmId <- filmIdF
+          _ <- repoFilmActor.saveAll(f.actors.map(id => FilmActor(id, filmId, DateTime.now())))
+        } yield filmId
+      }.map((v => Right(v)))
       case errors =>
         Future.successful(Left(errors))
     }
