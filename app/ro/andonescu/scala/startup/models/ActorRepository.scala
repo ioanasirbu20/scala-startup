@@ -37,6 +37,10 @@ class ActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
     actor.result
   }
 
+  def findById(ids: Seq[Long]): Future[Seq[Actor]] = db.run {
+    actor.filter(_.id inSet ids).result
+  }
+
   def save(a: Actor): Future[Long] = db.run {
     actor returning actor.map(_.id) += a
   }

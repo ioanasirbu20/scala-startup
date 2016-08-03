@@ -39,11 +39,15 @@ class FilmActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(i
     filmActor returning filmActor.map(_.actorId) ++= fas
   }
 
-  //  def existsFilmId(ids: Seq[Long]): Future[Seq[Long]] = db.run {
-  //    filmActor.filter(_.filmId inSet ids).map(_.filmId).result
-  //  }
-  //
-  //  def existsActorId(ids: Seq[Long]): Future[Seq[Long]] = db.run {
-  //    filmActor.filter(_.actorId inSet ids).map(_.actorId).result
-  //  }
+  def findByFilmIds(ids: Seq[Long]): Future[Seq[FilmActor]] = db.run {
+    filmActor.filter(_.filmId inSet ids).result
+  }
+
+  //    def existsActorId(ids: Seq[Long]): Future[Seq[Long]] = db.run {
+  //      filmActor.filter(_.actorId inSet ids).map(_.actorId).result
+  //    }
 }
+
+// Map (
+// ID(1) -> SEQ(A(1), A(2))
+//
