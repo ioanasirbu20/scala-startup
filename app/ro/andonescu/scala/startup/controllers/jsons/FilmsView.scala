@@ -19,7 +19,7 @@ case class FilmWithActor(id: Long, title: String, description: String, releaseYe
   languageId: Int, originalLanguageId: Int, actors: Seq[FilmActorView], rentalDuration: Int,
   rentalRate: Float, length: Int, replacementCost: Float, rating: String)
 
-case class FilmActorView(id: Long, lastName: String)
+case class FilmActorView(id: Long, firstName: String, lastName: String)
 
 object FilmForm {
   implicit val filmFormReads: Reads[FilmForm] = (
@@ -41,7 +41,8 @@ object FilmActorView {
   implicit object FilmActorWrites extends Writes[FilmActorView] {
     override def writes(f: FilmActorView): JsValue = Json.obj(
       "id" -> Json.toJson(f.id),
-      "lastName" -> Json.toJson(f.lastName)
+      "lastName" -> Json.toJson(f.lastName),
+      "firstName" -> Json.toJson(f.firstName)
     )
   }
 }
