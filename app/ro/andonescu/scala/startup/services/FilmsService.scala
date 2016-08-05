@@ -13,8 +13,8 @@ import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Created by V3790155 on 7/26/2016.
-  */
+ * Created by V3790155 on 7/26/2016.
+ */
 trait FilmsService {
   def findAll(): Future[Seq[FilmWithActor]]
 
@@ -26,11 +26,11 @@ trait FilmsService {
 }
 
 @Singleton
-class FilmsServiceImpl @Inject()(repo: FilmRepository, repoFilmActor: FilmActorRepository, repoActor: ActorRepository, validation: FilmValidation)(implicit ec: ExecutionContext) extends FilmsService {
+class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActorRepository, repoActor: ActorRepository, validation: FilmValidation)(implicit ec: ExecutionContext) extends FilmsService {
   override def findAll(): Future[Seq[FilmWithActor]] = {
     for {
 
-    // filme
+      // filme
       films <- repo.findAll()
       filmIds = films.map(_.id)
 
@@ -51,41 +51,15 @@ class FilmsServiceImpl @Inject()(repo: FilmRepository, repoFilmActor: FilmActorR
 
   private def aggregateFilmsAndActors(films: Seq[Film], actors: Seq[Actor], filmsWithActors: Map[Long, Seq[FilmActor]]): Seq[FilmWithActor] = {
 
-    var filmAndActor: Seq[FilmWithActor] = Seq.empty
-    var actorsSeq: Seq[FilmActorView] = Seq.empty
+    films.map { film =>
 
-    def getActors(id: Long): Seq[FilmActorView] = {
-      var filmActorView: Seq[FilmActorView] = Seq.empty
-      for (i <- 0 until actors.length) {
-        if (actors(i).id == id)
-          filmActorView = filmActorView :+ FilmActorView(actors(i).id, actors(i).firstName, actors(i).lastName)
-      }
-      filmActorView
+      val filmActors = filmsWithActors.filter(p => p._1 == film.id).headOption.map(p => p._2.map(_.actorId)).getOrElse(Seq.empty[Long])
+
+      val actorsObj = actors.filter(a => filmActors.contains(a.id)).map(a => FilmActorView(a.id, a.firstName, a.lastName))
+
+      FilmWithActor(film.id, film.title, film.description, film.releaseYear, film.languageId, film.originalLanguageId, actorsObj, film.rentalDuration, film.rentalRate, film.length, film.replacementCost, film.rating)
+
     }
-
-    def getActorIds(id: Long): Seq[Long] = {
-      val keys = filmsWithActors.keys.toSeq
-      var actorSeq: Seq[Long] = Seq.empty
-
-      for (i <- 0 until filmsWithActors.size)
-        if (id == keys(i)) {
-          actorSeq = filmsWithActors(id).map(_.actorId)
-        }
-      actorSeq
-    }
-
-    for (i <- 0 until films.length) {
-      if (getActorIds(films(i).id) == Seq.empty) {
-        filmAndActor = filmAndActor :+ FilmWithActor(films(i).id, films(i).title, films(i).description, films(i).releaseYear, films(i).languageId, films(i).originalLanguageId, Seq.empty, films(i).rentalDuration, films(i).rentalRate, films(i).length, films(i).replacementCost, films(i).rating)
-      } else {
-        getActorIds(films(i).id).map { actor =>
-          actorsSeq = actorsSeq ++ getActors(actor)
-        }
-        filmAndActor = filmAndActor :+ FilmWithActor(films(i).id, films(i).title, films(i).description, films(i).releaseYear, films(i).languageId, films(i).originalLanguageId, actorsSeq, films(i).rentalDuration, films(i).rentalRate, films(i).length, films(i).replacementCost, films(i).rating)
-        actorsSeq = Seq.empty
-      }
-    }
-    filmAndActor
   }
 
   override def save(f: FilmForm): Future[Either[Seq[ErrorMessage], Long]] = {
@@ -105,7 +79,7 @@ class FilmsServiceImpl @Inject()(repo: FilmRepository, repoFilmActor: FilmActorR
 
   override def delete(id: Int): Future[Either[Seq[ErrorMessage], Int]] = {
     validation.idValid(id).flatMap {
-      case Nil => repo.delete(id).map(v => Right(v))
+      case Nil   => repo.delete(id).map(v => Right(v))
       case error => Future.successful(Left(error))
     }
   }

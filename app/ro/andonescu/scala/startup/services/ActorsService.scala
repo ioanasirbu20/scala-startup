@@ -2,30 +2,52 @@ package ro.andonescu.scala.startup.services
 
 import com.google.inject.{Inject, Singleton}
 import org.joda.time.DateTime
-import ro.andonescu.scala.startup.controllers.jsons.ActorForm
-import ro.andonescu.scala.startup.models.ActorRepository
-import ro.andonescu.scala.startup.models.entity.Actor
+import ro.andonescu.scala.startup.controllers.jsons.{ActorFilmView, ActorForm, ActorsWithFilms, FilmWithActor}
+import ro.andonescu.scala.startup.models.{ActorRepository, FilmActorRepository, FilmRepository}
+import ro.andonescu.scala.startup.models.entity.{Actor, Film, FilmActor}
 import ro.andonescu.scala.startup.validations.errors.{ErrorMessage, ErrorMessages}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * Created by V3790155 on 7/26/2016.
- */
+  * Created by V3790155 on 7/26/2016.
+  */
 trait ActorsService {
 
   def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]]
 
-  def findAll(): Future[Seq[Actor]]
+  def findAll(): Future[Seq[ActorsWithFilms]]
 
   def delete(id: Long): Future[Int]
 
 }
 
 @Singleton
-class ActorsServiceImpl @Inject() (repo: ActorRepository)(implicit ec: ExecutionContext) extends ActorsService {
-  override def findAll(): Future[Seq[Actor]] = {
-    repo.findAll()
+class ActorsServiceImpl @Inject()(repo: ActorRepository, repoFilm: FilmRepository, repoFilmActor: FilmActorRepository)(implicit ec: ExecutionContext) extends ActorsService {
+  override def findAll(): Future[Seq[ActorsWithFilms]] = {
+    for {
+      actors <- repo.findAll()
+      actorsIds = actors.map(_.id)
+
+      films <- repoFilm.findAll()
+      filmsIds = films.map(_.id)
+
+      actorsFilms <- repoFilmActor.findByActorIds(actorsIds)
+      actorsWithFilms = actorsFilms.groupBy(_.actorId)
+
+      actorsAndFilms: Seq[ActorsWithFilms] = aggregateActorsAndFilms(films, actors, actorsWithFilms)
+    } yield actorsAndFilms
+  }
+
+  def aggregateActorsAndFilms(films: Seq[Film], actors: Seq[Actor], actorsWithFilms: Map[Long, Seq[FilmActor]]): Seq[ActorsWithFilms] = {
+    actors.map { actor =>
+
+      val actorsFilms = actorsWithFilms.filter(p => p._1 == actor.id).headOption.map(p => p._2.map(_.filmId)).getOrElse(Seq.empty[Long])
+
+      val filmsObj = films.filter(f => actorsFilms.contains(f.id)).map(f => ActorFilmView(f.id, f.title, f.description, f.releaseYear))
+
+      ActorsWithFilms(actor.id, actor.firstName, actor.lastName, filmsObj)
+    }
   }
 
   override def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]] = {
@@ -40,7 +62,7 @@ class ActorsServiceImpl @Inject() (repo: ActorRepository)(implicit ec: Execution
     def isActorValid(): Future[Seq[ErrorMessage]] = {
       repo.by(actorForm.firstName, actorForm.lastName).map {
         case Some(_) => Seq(ErrorMessage("firstName, lastName", "Actor already saved."))
-        case None    => Seq.empty
+        case None => Seq.empty
       }
     }
     //
