@@ -10,8 +10,8 @@ import ro.andonescu.scala.startup.validations.errors.{ErrorMessage, ErrorMessage
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Created by V3790155 on 7/26/2016.
-  */
+ * Created by V3790155 on 7/26/2016.
+ */
 trait ActorsService {
 
   def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]]
@@ -23,14 +23,13 @@ trait ActorsService {
 }
 
 @Singleton
-class ActorsServiceImpl @Inject()(repo: ActorRepository, repoFilm: FilmRepository, repoFilmActor: FilmActorRepository)(implicit ec: ExecutionContext) extends ActorsService {
+class ActorsServiceImpl @Inject() (repo: ActorRepository, repoFilm: FilmRepository, repoFilmActor: FilmActorRepository)(implicit ec: ExecutionContext) extends ActorsService {
   override def findAll(): Future[Seq[ActorsWithFilms]] = {
     for {
       actors <- repo.findAll()
       actorsIds = actors.map(_.id)
 
       films <- repoFilm.findAll()
-      filmsIds = films.map(_.id)
 
       actorsFilms <- repoFilmActor.findByActorIds(actorsIds)
       actorsWithFilms = actorsFilms.groupBy(_.actorId)
@@ -42,7 +41,7 @@ class ActorsServiceImpl @Inject()(repo: ActorRepository, repoFilm: FilmRepositor
   def aggregateActorsAndFilms(films: Seq[Film], actors: Seq[Actor], actorsWithFilms: Map[Long, Seq[FilmActor]]): Seq[ActorsWithFilms] = {
     actors.map { actor =>
 
-      val actorsFilms = actorsWithFilms.filter(p => p._1 == actor.id).headOption.map(p => p._2.map(_.filmId)).getOrElse(Seq.empty[Long])
+      val actorsFilms = actorsWithFilms.getOrElse(actor.id, Seq.empty[FilmActor]).map(_.filmId)
 
       val filmsObj = films.filter(f => actorsFilms.contains(f.id)).map(f => ActorFilmView(f.id, f.title, f.description, f.releaseYear))
 
@@ -62,7 +61,7 @@ class ActorsServiceImpl @Inject()(repo: ActorRepository, repoFilm: FilmRepositor
     def isActorValid(): Future[Seq[ErrorMessage]] = {
       repo.by(actorForm.firstName, actorForm.lastName).map {
         case Some(_) => Seq(ErrorMessage("firstName, lastName", "Actor already saved."))
-        case None => Seq.empty
+        case None    => Seq.empty
       }
     }
     //
@@ -79,6 +78,10 @@ class ActorsServiceImpl @Inject()(repo: ActorRepository, repoFilm: FilmRepositor
   }
 
   override def delete(id: Long): Future[Int] = {
-    repo.delete(id)
+    for {
+      _ <- repoFilmActor.deleteByActorId(id)
+      deleteActor <- repo.delete(id)
+    } yield deleteActor
+
   }
 }

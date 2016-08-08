@@ -9,6 +9,7 @@ import ro.andonescu.scala.startup.models.{ActorRepository, FilmActorRepository, 
 import ro.andonescu.scala.startup.models.entity.{Actor, Film, FilmActor}
 import ro.andonescu.scala.startup.validations.FilmValidation
 import ro.andonescu.scala.startup.validations.errors.ErrorMessage
+import slick.jdbc.meta.MBestRowIdentifierColumn.Scope.Transaction
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -78,8 +79,15 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
   }
 
   override def delete(id: Int): Future[Either[Seq[ErrorMessage], Int]] = {
+
     validation.idValid(id).flatMap {
-      case Nil   => repo.delete(id).map(v => Right(v))
+      case Nil => {
+        for {
+          _ <- repoFilmActor.deleteByFilmId(id)
+          deleteFilm <- repo.delete(id)
+        } yield deleteFilm
+
+      }.map(v => Right(v))
       case error => Future.successful(Left(error))
     }
   }

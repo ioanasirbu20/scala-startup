@@ -47,6 +47,14 @@ class FilmActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(i
     filmActor.filter(_.actorId inSet ids).result
   }
 
+  def deleteByFilmId(id: Long): Future[Int] = db.run {
+    filmActor.filter(_.filmId === id).delete
+  }
+
+  def deleteByActorId(id: Long): Future[Int] = db.run {
+    filmActor.filter(_.actorId === id).delete
+  }
+
   //    def existsActorId(ids: Seq[Long]): Future[Seq[Long]] = db.run {
   //      filmActor.filter(_.actorId inSet ids).map(_.actorId).result
   //    }
