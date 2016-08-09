@@ -36,5 +36,8 @@ GET           /V1/films                 ro.andonescu.scala.startup.controllers.F
 POST          /V1/films                 ro.andonescu.scala.startup.controllers.FilmController.addFilm
 DELETE        /V1/films/:id             ro.andonescu.scala.startup.controllers.FilmController.removeFilm(id: Int)
 PUT           /V1/films/:id             ro.andonescu.scala.startup.controllers.FilmController.updateFilm(id: Long)
+
+GET           /V1/categories            ro.andonescu.scala.startup.controllers.CategoryController.getCategories
+POST          /V1/categories            ro.andonescu.scala.startup.controllers.CategoryController.addCategory
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file             controllers.Assets.at(path="/public", file)

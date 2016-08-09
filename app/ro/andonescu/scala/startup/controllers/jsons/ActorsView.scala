@@ -1,13 +1,12 @@
 package ro.andonescu.scala.startup.controllers.jsons
 
-import play.api.libs.json._
-import ro.andonescu.scala.startup.models.entity.Actor
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
+import play.api.libs.json._
 
 /**
-  * Created by V3790155 on 7/22/2016.
-  */
+ * Created by V3790155 on 7/22/2016.
+ */
 case class ActorForm(firstName: String, lastName: String)
 
 case class ActorsView(items: Seq[ActorsWithFilms])
@@ -19,8 +18,8 @@ case class ActorFilmView(id: Long, title: String, description: String, releaseYe
 object ActorForm {
   implicit val actorFormReads: Reads[ActorForm] = (
     (JsPath \ "firstName").read[String](minLength[String](2)) and
-      (JsPath \ "lastName").read[String](minLength[String](5))
-    ) (ActorForm.apply _)
+    (JsPath \ "lastName").read[String](minLength[String](5))
+  )(ActorForm.apply _)
 }
 
 object ActorFilmView {
@@ -52,6 +51,4 @@ object ActorsWithFilms {
 object ActorsView {
   implicit val actorViewWrites = Json.writes[ActorsView]
 }
-
-
 
