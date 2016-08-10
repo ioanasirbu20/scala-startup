@@ -44,4 +44,8 @@ class CategoryRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(im
     category.filter(_.name === name).result.headOption
   }
 
+  def existIds(ids: Seq[Long]): Future[Seq[Long]] = db.run {
+    category.filter(_.id inSet ids).map(_.id).result
+  }
+
 }

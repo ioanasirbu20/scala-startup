@@ -35,11 +35,19 @@ class FilmCategoryRepository @Inject() (dbConfigProvider: DatabaseConfigProvider
     filmCategory returning filmCategory.map(_.categoryId) += fc
   }
 
+  def saveAll(fcs: Seq[FilmCategory]): Future[Seq[Long]] = db.run {
+    filmCategory returning filmCategory.map(_.categoryId) ++= fcs
+  }
+
   def deleteByFilmId(id: Long): Future[Int] = db.run {
     filmCategory.filter(_.filmId === id).delete
   }
 
-  def findByFilmIds(ids: Long): Future[Seq[FilmCategory]] = db.run {
-    filmCategory.filter(_.filmId === ids).result
+  //  def deleteByCategoryId(id: Long): Future[Int] = db.run {
+  //    filmCategory.filter(_.categoryId === id).delete
+  //  }
+
+  def findByFilmIds(ids: Seq[Long]): Future[Seq[FilmCategory]] = db.run {
+    filmCategory.filter(_.filmId inSet ids).result
   }
 }

@@ -4,9 +4,9 @@ import java.util.Calendar
 
 import com.google.inject.{Inject, Singleton}
 import org.joda.time.DateTime
-import ro.andonescu.scala.startup.controllers.jsons.{FilmActorView, FilmForm, FilmWithActor}
-import ro.andonescu.scala.startup.models.{ActorRepository, FilmActorRepository, FilmRepository, LanguageRepository}
-import ro.andonescu.scala.startup.models.entity.{Actor, Film, FilmActor}
+import ro.andonescu.scala.startup.controllers.jsons.{FilmActorView, FilmCategoryView, FilmForm, FilmWithActor}
+import ro.andonescu.scala.startup.models._
+import ro.andonescu.scala.startup.models.entity._
 import ro.andonescu.scala.startup.validations.FilmValidation
 import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 import slick.jdbc.meta.MBestRowIdentifierColumn.Scope.Transaction
@@ -27,7 +27,7 @@ trait FilmsService {
 }
 
 @Singleton
-class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActorRepository, repoActor: ActorRepository, validation: FilmValidation)(implicit ec: ExecutionContext) extends FilmsService {
+class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActorRepository, repoActor: ActorRepository, repoCategory: CategoryRepository, repoFilmCategory: FilmCategoryRepository, validation: FilmValidation)(implicit ec: ExecutionContext) extends FilmsService {
   override def findAll(): Future[Seq[FilmWithActor]] = {
     for {
 
@@ -45,12 +45,18 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
       // filme (id) cu film_actors (id)
       filmsWithActors = filmActors.groupBy(_.filmId)
 
-      filmsAndActors: Seq[FilmWithActor] = aggregateFilmsAndActors(films, actors, filmsWithActors)
+      category <- repoCategory.findAll()
+      categoryId = category.map(_.id)
+
+      filmsCategories <- repoFilmCategory.findByFilmIds(filmIds)
+      filmsWithCategories = filmsCategories.groupBy(_.filmId)
+
+      filmsAndActors: Seq[FilmWithActor] = aggregateFilmsAndActors(films, actors, category, filmsWithActors, filmsWithCategories)
     } yield filmsAndActors
 
   }
 
-  private def aggregateFilmsAndActors(films: Seq[Film], actors: Seq[Actor], filmsWithActors: Map[Long, Seq[FilmActor]]): Seq[FilmWithActor] = {
+  private def aggregateFilmsAndActors(films: Seq[Film], actors: Seq[Actor], category: Seq[Category], filmsWithActors: Map[Long, Seq[FilmActor]], filmsWithCategories: Map[Long, Seq[FilmCategory]]): Seq[FilmWithActor] = {
 
     films.map { film =>
 
@@ -58,7 +64,11 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
 
       val actorsObj = actors.filter(a => filmActors.contains(a.id)).map(a => FilmActorView(a.id, a.firstName, a.lastName))
 
-      FilmWithActor(film.id, film.title, film.description, film.releaseYear, film.languageId, film.originalLanguageId, actorsObj, film.rentalDuration, film.rentalRate, film.length, film.replacementCost, film.rating)
+      val filmCategory = filmsWithCategories.filter(p => p._1 == film.id).headOption.map(p => p._2.map(_.categoryId)).getOrElse(Seq.empty[Long])
+
+      val categoryObj = category.filter(c => filmCategory.contains(c.id)).map(c => FilmCategoryView(c.name))
+
+      FilmWithActor(film.id, film.title, film.description, film.releaseYear, film.languageId, film.originalLanguageId, actorsObj, categoryObj, film.rentalDuration, film.rentalRate, film.length, film.replacementCost, film.rating)
 
     }
   }
@@ -70,7 +80,8 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
         val filmIdF = repo.save(Film(0, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating))
         for {
           filmId <- filmIdF
-          _ <- repoFilmActor.saveAll(f.actors.map(id => FilmActor(id, filmId, DateTime.now())))
+          filmActor <- repoFilmActor.saveAll(f.actors.map(id => FilmActor(id, filmId, DateTime.now())))
+          _ <- repoFilmCategory.saveAll(f.category.map(id => FilmCategory(filmId, id, DateTime.now())))
         } yield filmId
       }.map((v => Right(v)))
       case errors =>
@@ -84,7 +95,9 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
       case Nil => {
         for {
           _ <- repoFilmActor.deleteByFilmId(id)
+          deleteFilmCategory <- repoFilmCategory.deleteByFilmId(id)
           deleteFilm <- repo.delete(id)
+
         } yield deleteFilm
 
       }.map(v => Right(v))
