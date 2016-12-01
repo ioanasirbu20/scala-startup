@@ -68,7 +68,7 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
 
       val categoryObj = category.filter(c => filmCategory.contains(c.id)).map(c => FilmCategoryView(c.name))
 
-      FilmWithActor(film.id, film.title, film.description, film.releaseYear, film.languageId, film.originalLanguageId, actorsObj, categoryObj, film.rentalDuration, film.rentalRate, film.length, film.replacementCost, film.rating)
+      FilmWithActor(film.id, film.title, film.description, film.releaseYear, film.languageId, actorsObj, categoryObj, film.rating)
 
     }
   }
@@ -77,11 +77,11 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
 
     validation.saveValidation(f).flatMap {
       case Nil => {
-        val filmIdF = repo.save(Film(0, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating))
+        val filmIdF = repo.save(Film(0, f.title, f.description, f.releaseYear, f.languageId, f.rating))
         for {
           filmId <- filmIdF
-          filmActor <- repoFilmActor.saveAll(f.actors.map(id => FilmActor(id, filmId, DateTime.now())))
-          _ <- repoFilmCategory.saveAll(f.category.map(id => FilmCategory(filmId, id, DateTime.now())))
+          filmActor <- repoFilmActor.saveAll(f.actors.map(id => FilmActor(id, filmId)))
+          _ <- repoFilmCategory.saveAll(f.category.map(id => FilmCategory(filmId, id)))
         } yield filmId
       }.map((v => Right(v)))
       case errors =>
@@ -108,7 +108,7 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
   override def update(id: Long, f: FilmForm): Future[Either[Seq[ErrorMessage], Long]] = {
     validation.updateValidation(f, id).flatMap {
       case Nil =>
-        repo.update(Film(id, f.title, f.description, f.releaseYear, f.languageId, f.originalLanguageId, f.rentalDuration, f.rentalRate, f.length, f.replacementCost, f.rating)).map((v => Right(v)))
+        repo.update(Film(id, f.title, f.description, f.releaseYear, f.languageId, f.rating)).map((v => Right(v)))
       case errors =>
         Future.successful(Left(errors))
     }

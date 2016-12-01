@@ -1,5 +1,4 @@
 package ro.andonescu.scala.startup.controllers
-
 import java.lang.ProcessBuilder.Redirect
 import javax.inject.Inject
 
@@ -14,13 +13,5 @@ import scala.concurrent.ExecutionContext
 class ApplicationController @Inject() (val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
   def homepage = Action {
     Ok(views.html.homepage())
-  }
-
-  def persons = Action {
-    Ok(views.html.persons())
-  }
-
-  def products = Action {
-    Ok(views.html.products())
   }
 }

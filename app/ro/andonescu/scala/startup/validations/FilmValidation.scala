@@ -10,9 +10,6 @@ import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Created by V3790155 on 7/27/2016.
- */
 @Singleton
 class FilmValidation @Inject() (repo: FilmRepository, langRepo: LanguageRepository, actorRepo: ActorRepository, categoryRepo: CategoryRepository)(implicit ec: ExecutionContext) {
 

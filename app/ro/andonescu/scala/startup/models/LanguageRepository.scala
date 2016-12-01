@@ -24,9 +24,7 @@ class LanguageRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(im
 
     def name = column[String]("name")
 
-    def lastUpdate = column[DateTime]("lastUpdate")
-
-    def * = (id, name, lastUpdate) <> ((Language.apply _).tupled, Language.unapply)
+    def * = (id, name) <> ((Language.apply _).tupled, Language.unapply)
   }
 
   private val language = TableQuery[LanguageTable]
@@ -37,5 +35,9 @@ class LanguageRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(im
 
   def idCheck(id: Long): Future[Option[Language]] = db.run {
     language.filter(_.id === id).result.headOption
+  }
+
+  def save(l: Language): Future[Long] = db.run {
+    language returning language.map(_.id) += l
   }
 }

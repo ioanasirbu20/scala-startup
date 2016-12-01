@@ -9,9 +9,6 @@ import ro.andonescu.scala.startup.validations.errors.{ErrorMessage, ErrorMessage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Created by V3790155 on 7/26/2016.
- */
 trait ActorsService {
 
   def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]]
@@ -52,7 +49,7 @@ class ActorsServiceImpl @Inject() (repo: ActorRepository, repoFilm: FilmReposito
   override def save(actorForm: ActorForm): Future[Either[Seq[ErrorMessage], Long]] = {
     validateActorCreate(actorForm).flatMap {
       case Nil =>
-        repo.save(Actor(0, actorForm.firstName, actorForm.lastName, DateTime.now())).map(v => Right(v))
+        repo.save(Actor(0, actorForm.firstName, actorForm.lastName)).map(v => Right(v))
       case errors => Future.successful(Left(errors))
     }
   }

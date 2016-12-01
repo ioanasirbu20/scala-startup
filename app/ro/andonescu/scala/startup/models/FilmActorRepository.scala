@@ -8,9 +8,6 @@ import slick.driver.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Created by V3790155 on 8/1/2016.
- */
 @Singleton
 class FilmActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -19,14 +16,12 @@ class FilmActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(i
   import driver.api._
   import com.github.tototoshi.slick.PostgresJodaSupport._
 
-  private class FilmActorTable(tag: Tag) extends Table[FilmActor](tag, "filmActor") {
+  private class FilmActorTable(tag: Tag) extends Table[FilmActor](tag, "film_actor") {
     def actorId = column[Long]("actorId")
 
     def filmId = column[Long]("filmId")
 
-    def lastUpdate = column[DateTime]("lastUpdate")
-
-    def * = (actorId, filmId, lastUpdate) <> ((FilmActor.apply _).tupled, FilmActor.unapply)
+    def * = (actorId, filmId) <> ((FilmActor.apply _).tupled, FilmActor.unapply)
   }
 
   private val filmActor = TableQuery[FilmActorTable]

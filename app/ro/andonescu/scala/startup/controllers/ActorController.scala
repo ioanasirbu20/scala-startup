@@ -10,9 +10,6 @@ import ro.andonescu.scala.startup.validations.errors.ErrorMessages
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Created by V3790155 on 7/22/2016.
- */
 class ActorController @Inject() (service: ActorsService, implicit val messagesApi: MessagesApi)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
 
   def getActors = Action.async {

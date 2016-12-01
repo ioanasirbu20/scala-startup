@@ -8,9 +8,6 @@ import slick.driver.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Created by V3790155 on 8/9/2016.
- */
 @Singleton
 class FilmCategoryRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -24,9 +21,7 @@ class FilmCategoryRepository @Inject() (dbConfigProvider: DatabaseConfigProvider
 
     def categoryId = column[Long]("category_id")
 
-    def lastUpdate = column[DateTime]("last_update")
-
-    def * = (filmId, categoryId, lastUpdate) <> ((FilmCategory.apply _).tupled, FilmCategory.unapply)
+    def * = (filmId, categoryId) <> ((FilmCategory.apply _).tupled, FilmCategory.unapply)
   }
 
   private val filmCategory = TableQuery[FilmCategoryTable]

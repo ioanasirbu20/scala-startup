@@ -10,9 +10,6 @@ import ro.andonescu.scala.startup.validations.errors.ErrorMessage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Created by V3790155 on 8/9/2016.
- */
 trait CategoryService {
   def save(category: CategoryForm): Future[Either[Seq[ErrorMessage], Long]]
 
@@ -25,7 +22,7 @@ class CategoryServiceImpl @Inject() (repo: CategoryRepository, validation: Categ
   override def save(c: CategoryForm): Future[Either[Seq[ErrorMessage], Long]] = {
     validation.isNameValid(c).flatMap {
       case Nil => {
-        repo.save(Category(0, c.name, DateTime.now))
+        repo.save(Category(0, c.name))
       }.map((v => Right(v)))
       case errors =>
         Future.successful(Left(errors))

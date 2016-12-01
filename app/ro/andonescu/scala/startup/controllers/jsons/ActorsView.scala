@@ -4,9 +4,6 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 
-/**
- * Created by V3790155 on 7/22/2016.
- */
 case class ActorForm(firstName: String, lastName: String)
 
 case class ActorsView(items: Seq[ActorsWithFilms])

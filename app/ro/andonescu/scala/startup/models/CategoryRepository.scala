@@ -25,9 +25,7 @@ class CategoryRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(im
 
     def name = column[String]("name")
 
-    def lastUpdate = column[DateTime]("last_update")
-
-    def * = (id, name, lastUpdate) <> ((Category.apply _).tupled, Category.unapply)
+    def * = (id, name) <> ((Category.apply _).tupled, Category.unapply)
   }
 
   private val category = TableQuery[CategoryTable]

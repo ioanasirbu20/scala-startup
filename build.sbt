@@ -2,7 +2,7 @@ import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 
-name := """andonescu-play-startup"""
+name := """ioana-play-startup"""
 
 version := "1.0-SNAPSHOT"
 

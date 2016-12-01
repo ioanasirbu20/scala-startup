@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 /**
  * Created by V3790155 on 8/9/2016.
  */
-case class FilmCategory(filmId: Long, categoryId: Long, lastUpdate: DateTime)
+case class FilmCategory(filmId: Long, categoryId: Long)
 
 object FilmCategory {
   implicit val filmCategory = Json.format[FilmCategory]

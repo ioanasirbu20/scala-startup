@@ -3,41 +3,18 @@
 # ~~~~
 
 # Home page
-GET           /                         ro.andonescu.scala.startup.controllers.ApplicationController.homepage
-GET           /addAPerson               ro.andonescu.scala.startup.controllers.PersonController.addAPerson
-POST          /person                   ro.andonescu.scala.startup.controllers.PersonController.addPerson
-GET           /getPersons               ro.andonescu.scala.startup.controllers.PersonController.getPersons
+GET           /                     ro.andonescu.scala.startup.controllers.ApplicationController.homepage
 
+# api
+GET           /V1/languages         ro.andonescu.scala.startup.controllers.LanguageController.getLanguages
+GET           /V1/actors            ro.andonescu.scala.startup.controllers.ActorController.getActors
+POST          /V1/actors            ro.andonescu.scala.startup.controllers.ActorController.addActor
+DELETE        /V1/actors/:id        ro.andonescu.scala.startup.controllers.ActorController.removeActor(id: Long)
+GET           /V1/films             ro.andonescu.scala.startup.controllers.FilmController.getFilms
+POST          /V1/films             ro.andonescu.scala.startup.controllers.FilmController.addFilm
+DELETE        /V1/films/:id         ro.andonescu.scala.startup.controllers.FilmController.removeFilm(id: Int)
+PUT           /V1/films/:id         ro.andonescu.scala.startup.controllers.FilmController.updateFilm(id: Long)
+POST          /V1/category          ro.andonescu.scala.startup.controllers.CategoryController.addCategory
 
-#GET     /getProducts                ro.andonescu.scala.startup.controllers.ProductController.getProducts
-GET           /addAProduct              ro.andonescu.scala.startup.controllers.ProductController.addAProduct
-#GET         /products/:ean              ro.andonescu.scala.startup.controllers.ProductController.show(ean: Long)
-POST          /product                  ro.andonescu.scala.startup.controllers.ProductController.addProduct
-
-GET           /persons                  ro.andonescu.scala.startup.controllers.ApplicationController.persons
-GET           /products                 ro.andonescu.scala.startup.controllers.ApplicationController.products
-
-
-#html
-GET           /getProducts              ro.andonescu.scala.startup.controllers.ProductController.index
-
-
-
-# json
-GET           /api/products             ro.andonescu.scala.startup.controllers.ProductController.getProducts
-GET           /api/products/:ean        ro.andonescu.scala.startup.controllers.ProductController.show(ean:Long)
-PUT           /api/products/:ean        ro.andonescu.scala.startup.controllers.ProductController.save(ean: Long)
-
-GET           /V1/languages             ro.andonescu.scala.startup.controllers.LanguageController.getLanguages
-GET           /V1/actors                ro.andonescu.scala.startup.controllers.ActorController.getActors
-POST          /V1/actors                ro.andonescu.scala.startup.controllers.ActorController.addActor
-DELETE        /V1/actors/:id            ro.andonescu.scala.startup.controllers.ActorController.removeActor(id: Long)
-GET           /V1/films                 ro.andonescu.scala.startup.controllers.FilmController.getFilms
-POST          /V1/films                 ro.andonescu.scala.startup.controllers.FilmController.addFilm
-DELETE        /V1/films/:id             ro.andonescu.scala.startup.controllers.FilmController.removeFilm(id: Int)
-PUT           /V1/films/:id             ro.andonescu.scala.startup.controllers.FilmController.updateFilm(id: Long)
-
-GET           /V1/categories            ro.andonescu.scala.startup.controllers.CategoryController.getCategories
-POST          /V1/categories            ro.andonescu.scala.startup.controllers.CategoryController.addCategory
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file             controllers.Assets.at(path="/public", file)
+GET           /assets/*file         controllers.Assets.at(path="/public", file)

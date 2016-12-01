@@ -1,21 +1,19 @@
 # --- !Ups
 
-CREATE SEQUENCE filmActor_id_seq
+CREATE SEQUENCE film_category_id_seq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
-  START 600
+  START 1
   CACHE 1;
 
-create table "filmActor" (
-  "actorId" integer NOT NULL,
-  "filmId" integer NOT NULL,
-  "lastUpdate" timestamp
-
+create table "film_category" (
+  "film_id" integer NOT NULL REFERENCES film(id),
+  "category_id" integer NOT NULL REFERENCES category(id)
 );
 
 # --- !Downs
 
-drop table  if exists "filmActor";
+drop table  if exists "film_category";
 
-drop sequence  if exists "filmActor_id_seq";
+drop sequence  if exists "film_category_id_seq";
