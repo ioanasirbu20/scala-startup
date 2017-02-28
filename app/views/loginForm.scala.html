@@ -1,0 +1,15 @@
+@import ro.andonescu.scala.startup.controllers.jsons.LoginForm
+
+@(user: Form[LoginForm])(implicit messages: Messages)
+@import helper._
+
+    @main("Log in") {
+    @form(ro.andonescu.scala.startup.controllers.routes.LoginController.login()){
+        @inputText(user("Username"))
+        @inputText(user("Password"))
+
+        <div class="buttons">
+            <input type="submit" value="Log in"/>
+        </div>
+    }
+}

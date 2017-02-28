@@ -14,7 +14,6 @@ class FilmActorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(i
 
   import dbConfig._
   import driver.api._
-  import com.github.tototoshi.slick.PostgresJodaSupport._
 
   private class FilmActorTable(tag: Tag) extends Table[FilmActor](tag, "film_actor") {
     def actorId = column[Long]("actorId")

@@ -16,5 +16,10 @@ DELETE        /V1/films/:id         ro.andonescu.scala.startup.controllers.FilmC
 PUT           /V1/films/:id         ro.andonescu.scala.startup.controllers.FilmController.updateFilm(id: Long)
 POST          /V1/category          ro.andonescu.scala.startup.controllers.CategoryController.addCategory
 
+#identity
+GET           /signupForm           ro.andonescu.scala.startup.controllers.IdentityController.view
+POST          /identity             ro.andonescu.scala.startup.controllers.IdentityController.addAnIdentity
+GET           /login                ro.andonescu.scala.startup.controllers.LoginController.view
+POST          /afterLogin           ro.andonescu.scala.startup.controllers.LoginController.login
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file         controllers.Assets.at(path="/public", file)

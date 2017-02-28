@@ -12,6 +12,8 @@ class ServiceModule extends Module {
   def bindings(environment: Environment, configuration: Configuration) = Seq(
     bind[ActorsService].to[ActorsServiceImpl],
     bind[FilmsService].to[FilmsServiceImpl],
-    bind[CategoryService].to[CategoryServiceImpl]
+    bind[CategoryService].to[CategoryServiceImpl],
+    bind[IdentityService].to[IdentityServiceImpl],
+    bind[LoginService].to[LoginServiceImpl]
   )
 }

@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
   "com.github.tminglei" %% "slick-pg" % "0.14.1",
   "com.github.tminglei" %% "slick-pg_date2" % "0.14.1",
   "com.github.tototoshi" %% "slick-joda-mapper" % "2.2.0",
+  "org.mindrot" % "jbcrypt" % "0.3m",
   specs2 % Test
 )
 

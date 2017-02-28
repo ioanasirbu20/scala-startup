@@ -1,15 +1,11 @@
 package ro.andonescu.scala.startup.services
 
-import java.util.Calendar
-
 import com.google.inject.{Inject, Singleton}
-import org.joda.time.DateTime
 import ro.andonescu.scala.startup.controllers.jsons.{FilmActorView, FilmCategoryView, FilmForm, FilmWithActor}
 import ro.andonescu.scala.startup.models._
 import ro.andonescu.scala.startup.models.entity._
 import ro.andonescu.scala.startup.validations.FilmValidation
 import ro.andonescu.scala.startup.validations.errors.ErrorMessage
-import slick.jdbc.meta.MBestRowIdentifierColumn.Scope.Transaction
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -83,7 +79,7 @@ class FilmsServiceImpl @Inject() (repo: FilmRepository, repoFilmActor: FilmActor
           filmActor <- repoFilmActor.saveAll(f.actors.map(id => FilmActor(id, filmId)))
           _ <- repoFilmCategory.saveAll(f.category.map(id => FilmCategory(filmId, id)))
         } yield filmId
-      }.map((v => Right(v)))
+      }.map(v => Right(v))
       case errors =>
         Future.successful(Left(errors))
     }

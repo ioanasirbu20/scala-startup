@@ -8,8 +8,8 @@ CREATE SEQUENCE film_actor_id_seq
   CACHE 1;
 
 create table "film_actor" (
-  "actorId" integer NOT NULL,
-  "filmId" integer NOT NULL
+  "actor_id" integer NOT NULL,
+  "film_id" integer NOT NULL
 );
 
 # --- !Downs
